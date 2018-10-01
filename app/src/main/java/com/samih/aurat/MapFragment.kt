@@ -1,18 +1,16 @@
 package com.samih.aurat
 
+import android.support.v4.app.Fragment
 import android.content.Context
 import android.net.Uri
 import android.os.Bundle
-import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import kotlinx.android.synthetic.main.fragment_map.*
+import org.osmdroid.views.MapView
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
 /**
  * A simple [Fragment] subclass.
@@ -25,30 +23,40 @@ private const val ARG_PARAM2 = "param2"
  */
 class MapFragment : Fragment() {
     // TODO: Rename and change types of parameters
+    /*
     private var mParam1: String? = null
     private var mParam2: String? = null
     private var mListener: OnFragmentInteractionListener? = null
-
+    */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        /*
         if (arguments != null) {
             mParam1 = arguments.getString(ARG_PARAM1)
             mParam2 = arguments.getString(ARG_PARAM2)
         }
+        */
+
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-        return TextView(activity).apply {
-            setText(R.string.hello_blank_fragment)
-        }
+        val rootView = inflater.inflate(R.layout.fragment_map, container, false)
+        val map = rootView.findViewById<MapView>(R.id.map)
+        MapManager.initializeOSM(12, map)
+        return rootView
+
     }
+}
 
     // TODO: Rename method, update argument and hook method into UI event
+    /*
     fun onButtonPressed(uri: Uri) {
         mListener?.onFragmentInteraction(uri)
     }
+    */
 
+    /*
     override fun onAttach(context: Context) {
         super.onAttach(context)
         if (context is OnFragmentInteractionListener) {
@@ -62,6 +70,7 @@ class MapFragment : Fragment() {
         super.onDetach()
         mListener = null
     }
+    */
 
     /**
      * This interface must be implemented by activities that contain this
@@ -74,6 +83,8 @@ class MapFragment : Fragment() {
      * (http://developer.android.com/training/basics/fragments/communicating.html)
      * for more information.
      */
+
+    /*
     interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         fun onFragmentInteraction(uri: Uri)
@@ -99,4 +110,5 @@ class MapFragment : Fragment() {
             }
         }
     }
-}
+    */
+
