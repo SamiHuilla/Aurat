@@ -2,14 +2,51 @@
 <android.support.constraint.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
 
-    <android.support.v7.widget.CardView
+    <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
         android:id="@+id/layersCard"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:layout_marginRight="10dp"
+        android:visibility="invisible"
+        card_view:cardBackgroundColor="#E6E6E6"
+        card_view:cardCornerRadius="8dp"
+        card_view:cardElevation="8dp"
+        card_view:layout_constraintRight_toLeftOf="@+id/floatingActionButton"
+        card_view:layout_constraintTop_toTopOf="@+id/floatingActionButton">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:padding="5dp">
+
+            <TextView
+                android:id="@+id/layersHeading"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Layers" />
+
+            <!--
+            <ImageButton
+                android:id="@+id/plowsButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/layersHeading"
+                android:foreground="@drawable/ic_snowplow" />
+            -->
+            <CheckBox
+                android:id="@+id/checkBoxPlows"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/layersHeading"
+                android:text="Plows" />
+        </RelativeLayout>
+    </android.support.v7.widget.CardView>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/floatingActionButton"

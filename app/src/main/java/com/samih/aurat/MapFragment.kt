@@ -4,6 +4,7 @@ import android.support.v4.app.Fragment
 import android.content.Context
 import android.net.Uri
 import android.os.Bundle
+import android.support.design.widget.FloatingActionButton
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -43,9 +44,18 @@ class MapFragment : Fragment() {
                               savedInstanceState: Bundle?): View? {
         val rootView = inflater.inflate(R.layout.fragment_map, container, false)
         val map = rootView.findViewById<MapView>(R.id.map)
-        MapManager.initializeOSM(12, map)
+        MapManager.initializeOSM(24, map)
+        rootView.findViewById<FloatingActionButton>(R.id.floatingActionButton).setOnClickListener { toggleLayersMenu() }
         return rootView
 
+    }
+
+    private fun toggleLayersMenu() {
+        if (layersCard.visibility == View.VISIBLE) {
+            layersCard.visibility = View.INVISIBLE
+        } else {
+            layersCard.visibility = View.VISIBLE
+        }
     }
 }
 

@@ -32,7 +32,7 @@
         -->
         <activity
             android:name=".Main3Activity"
-            android:label="@string/title_activity_main3"
+            android:label="@string/app_name"
             android:theme="@style/föli">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -8,6 +8,7 @@ import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentTransaction
 import com.samih.aurat.dummy.DummyContent
 import kotlinx.android.synthetic.main.activity_main3.*
+import org.osmdroid.config.Configuration
 
 
 class Main3Activity : FragmentActivity(), FavouritesFragment.OnListFragmentInteractionListener {
@@ -51,7 +52,7 @@ class Main3Activity : FragmentActivity(), FavouritesFragment.OnListFragmentInter
         mFragmentManager = supportFragmentManager
         mapFragment = MapFragment()
         favouritesFragment = FavouritesFragment()
-
+        Configuration.getInstance().userAgentValue = BuildConfig.APPLICATION_ID
         addFragment(MapFragment(), R.id.fragment_container)
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
 
