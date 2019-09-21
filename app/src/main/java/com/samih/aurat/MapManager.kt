@@ -99,7 +99,7 @@ object MapManager {
 
     private fun addMapLine(plowData: JsonObject){
         val locationHistory: JsonArray<JsonObject> = plowData.array("location_history")!!
-        var polyline = Polyline()
+        var polyline = Polyline(map)
         polyline.isGeodesic = true
         var points = ArrayList<GeoPoint>()
         var currentType = locationHistory[0].array<String>("events")?.get(0)!!  // get the first event type
@@ -121,7 +121,7 @@ object MapManager {
                 activePolylines.add(polyline)
                 map?.overlayManager?.add(polyline) // TODO: activePolylines:n tarkotus? filtteröinti?
                 map?.invalidate()
-                polyline = Polyline()
+                polyline = Polyline(map)
                 points.clear()
                 points.add(GeoPoint(location.array<Double>("coords")?.get(1)!!, location.array<Double>("coords")?.get(0)!!))
                 currentType = eventType
@@ -134,7 +134,7 @@ object MapManager {
         activePolylines.add(polyline)
         map?.overlayManager?.add(polyline)
         map?.invalidate()
-        polyline = Polyline()
+        polyline = Polyline(map)
 
     }
 

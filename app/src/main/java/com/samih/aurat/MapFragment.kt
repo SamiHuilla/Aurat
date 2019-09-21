@@ -47,7 +47,7 @@ class MapFragment : Fragment() {
         MapManager.initializeOSM(24, map)
         rootView.findViewById<FloatingActionButton>(R.id.floatingActionButton).setOnClickListener { toggleLayersMenu() }
         return rootView
-
+        //TODO: siirrä onCreateen?
     }
 
     private fun toggleLayersMenu() {
