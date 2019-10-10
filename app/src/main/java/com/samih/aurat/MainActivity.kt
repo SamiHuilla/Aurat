@@ -85,17 +85,17 @@ class MainActivity : Activity() {
 
     private fun populateMap(hours: Int){
         clearMap()
-        getActivePlows(hours)
+        fetchActivePlows(hours)
     }
 
-    private fun getActivePlows(hours: Int){
+    private fun fetchActivePlows(hours: Int){
         doAsync {
             val result = StringBuilder(URL(api + "?since=" + hours + "hours+ago").readText())
             uiThread {
                 if (result.toString() != "[]"){
                     val json = parser.parse(result) as JsonArray<JsonObject>
                     for (plow: JsonObject in json){
-                        createIndividualPlowTrail(hours, plow.int("id"))
+                        fetchIndividualPlowTrail(hours, plow.int("id"))
                     }
 
                 } else {
@@ -106,7 +106,7 @@ class MainActivity : Activity() {
         }
     }
 
-    private fun createIndividualPlowTrail(hours: Int, id: Int?){
+    private fun fetchIndividualPlowTrail(hours: Int, id: Int?){
         doAsync {
             val result = StringBuilder(URL(api + id + "?since=" + hours + "hours+ago&temporal_resolution=4").readText())
             uiThread {

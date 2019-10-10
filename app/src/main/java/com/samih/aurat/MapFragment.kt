@@ -10,6 +10,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import kotlinx.android.synthetic.main.fragment_map.*
+import org.osmdroid.tileprovider.tilesource.TileSourceFactory
+import org.osmdroid.util.BoundingBox
 import org.osmdroid.views.MapView
 
 
@@ -29,8 +31,10 @@ class MapFragment : Fragment() {
     private var mParam2: String? = null
     private var mListener: OnFragmentInteractionListener? = null
     */
+    private var map: MapView? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        MapManager.initializeOSM(24) // TODO: hae vain data, ja kuuntele muutoksia polylineissä
         /*
         if (arguments != null) {
             mParam1 = arguments.getString(ARG_PARAM1)
@@ -44,10 +48,17 @@ class MapFragment : Fragment() {
                               savedInstanceState: Bundle?): View? {
         val rootView = inflater.inflate(R.layout.fragment_map, container, false)
         val map = rootView.findViewById<MapView>(R.id.map)
-        MapManager.initializeOSM(24, map)
+        map!!.setTileSource(TileSourceFactory.MAPNIK)
+        map!!.setScrollableAreaLimitDouble(BoundingBox(70.127855,31.748989, 59.687982, 19.236935))
+        //map!!.setBuiltInZoomControls(true)
+        map!!.setMultiTouchControls(true)
+
+        val mapController = map!!.controller
+        mapController.setZoom(15.0)
+        mapController.setCenter(MapManager.centerOfTurku) // TODO: use location if enabled
         rootView.findViewById<FloatingActionButton>(R.id.floatingActionButton).setOnClickListener { toggleLayersMenu() }
         return rootView
-        //TODO: siirrä onCreateen?
+
     }
 
     private fun toggleLayersMenu() {

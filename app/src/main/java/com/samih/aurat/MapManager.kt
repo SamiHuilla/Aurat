@@ -1,18 +1,10 @@
 package com.samih.aurat
 
 import android.graphics.Color
-import android.view.View
-import android.widget.Toast
 import com.beust.klaxon.*
-import org.jetbrains.anko.toast
-import org.jetbrains.anko.doAsync
-import org.jetbrains.anko.uiThread
-import org.osmdroid.tileprovider.tilesource.TileSourceFactory
-import org.osmdroid.util.BoundingBox
+import com.samih.aurat.BuildConfig.BASE_URL
 import org.osmdroid.util.GeoPoint
-import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Polyline
-import java.net.URL
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
@@ -22,10 +14,7 @@ import java.util.*
  */
 object MapManager {
     private val parser: Parser = Parser()
-        private val api = "https://api.turku.fi/street-maintenance/v1/vehicles/"
-    private val centerOfTurku = GeoPoint(60.451628, 22.267044)
-    private var map: MapView? = null
-    private var activePolylines = ArrayList<Polyline>()
+    val centerOfTurku = GeoPoint(60.451628, 22.267044)
     private val eventColors: Map<String, String> = mapOf("au" to "#a6cee3",
     "su" to "#1f78b4",
     "hi" to "#b2df8a",
@@ -39,73 +28,48 @@ object MapManager {
     "pn" to "#ffff99",
     "kv" to "#b15928")
     private val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX", Locale.US)
-    fun initializeOSM(hours: Int, target: MapView){
-        map = target
-        map!!.setTileSource(TileSourceFactory.MAPNIK)
-        map!!.setScrollableAreaLimitDouble(BoundingBox(70.127855,31.748989, 59.687982, 19.236935))
-        //map!!.setBuiltInZoomControls(true)
-        map!!.setMultiTouchControls(true)
 
-        val mapController = map!!.controller
-        mapController.setZoom(15.0)
-        mapController.setCenter(centerOfTurku) // TODO: use location if enabled
 
-        populateMap(hours)
-        target.invalidate()
+    // TODO: kaikki mappiviewiin liittyvä fragmenttiin
+    fun initializeOSM(hours: Int){
+        PlowApiWrapper.fetchActivePlows(hours)
     }
 
-    private fun clearMap(){
-        activePolylines.clear()
 
-    }
-
-    private fun populateMap(hours: Int){
-        clearMap()
-        getActivePlows(hours)
-    }
-
-    private fun getActivePlows(hours: Int){
-        doAsync {
-            val result = StringBuilder(URL(api + "?since=" + hours + "hours+ago").readText())
-            uiThread {
-                if (result.toString() != "[]"){
-                    val json = parser.parse(result) as JsonArray<JsonObject>
-                    for (plow: JsonObject in json){
-                        createIndividualPlowTrail(hours, plow.int("id"))
-                    }
-
-                } else {
-                    //Toast.makeText(ctx, "No activity for the last $hours hours", Toast.LENGTH_SHORT).show()
-
-                }
+    fun parseActivePlows(activePlows: StringBuilder, hours: Int){
+        if (activePlows.toString() != "[]"){
+            val json = parser.parse(activePlows) as JsonArray<JsonObject>
+            for (plow: JsonObject in json){
+                PlowApiWrapper.fetchIndividualPlowTrail(hours, plow.int("id"))
             }
+
+        } else {
+            //Toast.makeText(ctx, "No activity for the last $hours hours", Toast.LENGTH_SHORT).show()
+
         }
+
     }
 
-    private fun createIndividualPlowTrail(hours: Int, id: Int?){
-        doAsync {
-            val result = StringBuilder(URL(api + id + "?since=" + hours + "hours+ago&temporal_resolution=1").readText())
-            uiThread {
-                if (result.toString() != "[]"){
-                    val json = parser.parse(result) as JsonObject
-                    addMapLine(json)
-                } else {
-                    //Toast.makeText(ctx, "No activity for plow $id for the last $hours hours", Toast.LENGTH_SHORT).show()
+    fun parseIndividualPlowData(plowDataStr: StringBuilder){
+        if (plowDataStr.toString() != "[]"){
+            val json = parser.parse(plowDataStr) as JsonObject
+            addMapLine(json)
+        } else {
+            //Toast.makeText(ctx, "No activity for plow $id for the last $hours hours", Toast.LENGTH_SHORT).show()
 
-                }
-            }
         }
+
+
     }
 
     private fun addMapLine(plowData: JsonObject){
+        val activePolylines = ArrayList<Polyline>()
         val locationHistory: JsonArray<JsonObject> = plowData.array("location_history")!!
-        var polyline = Polyline(map)
+        var polyline = Polyline()
         polyline.isGeodesic = true
         var points = ArrayList<GeoPoint>()
         var currentType = locationHistory[0].array<String>("events")?.get(0)!!  // get the first event type
         var currentTime: String = locationHistory[0]["timestamp"].toString()
-        //TODO: parsi aika jsonista
-
 
         locationHistory.forEach { location ->
             val eventType = location.array<String>("events")?.get(0)!!
@@ -119,22 +83,23 @@ object MapManager {
                 polyline.setPoints(points)
                 polyline.color = Color.parseColor(eventColors[currentType])
                 activePolylines.add(polyline)
-                map?.overlayManager?.add(polyline) // TODO: activePolylines:n tarkotus? filtteröinti?
-                map?.invalidate()
-                polyline = Polyline(map)
+                //map?.overlayManager?.add(polyline)
+                //map?.invalidate()
+                polyline = Polyline()
                 points.clear()
                 points.add(GeoPoint(location.array<Double>("coords")?.get(1)!!, location.array<Double>("coords")?.get(0)!!))
                 currentType = eventType
             }
             currentTime = time
-            // TODO: tarkista tyyppi ja aikaleima, pätki osiin jos tyyppi vaihtuu tai paikka muuttuu nopeasti
+
         }
         polyline.setPoints(points)
         polyline.color = Color.parseColor(eventColors[currentType])
         activePolylines.add(polyline)
-        map?.overlayManager?.add(polyline)
-        map?.invalidate()
-        polyline = Polyline(map)
+        // TODO: activePolylines ViewModelin(?) LiveDataan
+        //map?.overlayManager?.add(polyline)
+        //map?.invalidate()
+        polyline = Polyline()
 
     }
 
