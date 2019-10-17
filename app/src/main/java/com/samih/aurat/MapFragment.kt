@@ -1,14 +1,14 @@
 package com.samih.aurat
 
-import android.support.v4.app.Fragment
 import android.content.Context
 import android.net.Uri
 import android.os.Bundle
-import android.support.design.widget.FloatingActionButton
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.fragment.app.Fragment
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.android.synthetic.main.fragment_map.*
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.BoundingBox
@@ -47,7 +47,7 @@ class MapFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         val rootView = inflater.inflate(R.layout.fragment_map, container, false)
-        val map = rootView.findViewById<MapView>(R.id.map)
+        map = rootView.findViewById(R.id.map)
         map!!.setTileSource(TileSourceFactory.MAPNIK)
         map!!.setScrollableAreaLimitDouble(BoundingBox(70.127855,31.748989, 59.687982, 19.236935))
         //map!!.setBuiltInZoomControls(true)
@@ -56,11 +56,11 @@ class MapFragment : Fragment() {
         val mapController = map!!.controller
         mapController.setZoom(15.0)
         mapController.setCenter(MapManager.centerOfTurku) // TODO: use location if enabled
-        rootView.findViewById<FloatingActionButton>(R.id.floatingActionButton).setOnClickListener { toggleLayersMenu() }
+        //rootView.findViewById<FloatingActionButton>(R.id.floatingActionButton).setOnClickListener { toggleLayersMenu() }
         return rootView
 
     }
-
+/*
     private fun toggleLayersMenu() {
         if (layersCard.visibility == View.VISIBLE) {
             layersCard.visibility = View.INVISIBLE
@@ -68,6 +68,8 @@ class MapFragment : Fragment() {
             layersCard.visibility = View.VISIBLE
         }
     }
+
+ */
 }
 
     // TODO: Rename method, update argument and hook method into UI event
