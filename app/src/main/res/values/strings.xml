@@ -25,6 +25,7 @@
     <string name="hn">Sand removal</string>
     <string name="hj">Brushing</string>
     <string name="pn">Coating</string>
+    <string name="ha">Brushing and de-icing with salt</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

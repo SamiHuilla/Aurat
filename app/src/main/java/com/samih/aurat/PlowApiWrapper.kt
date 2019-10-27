@@ -12,7 +12,7 @@ import java.net.URL
 object PlowApiWrapper {
     fun fetchActivePlows(hours: Int){
         doAsyncResult {
-            val result = StringBuilder(URL(BASE_URL + "?since=" + hours + "hours+ago").readText())
+            val result = StringBuilder(URL(BASE_URL + "?since=" + hours + "hours+ago&limit=50").readText())
             uiThread {
                 MapManager.parseActivePlows(result, hours)
             }

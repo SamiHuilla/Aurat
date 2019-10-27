@@ -1,11 +1,11 @@
 package com.samih.aurat
 
 import android.os.Bundle
-import android.support.design.widget.BottomNavigationView
-import android.support.v4.app.Fragment
-import android.support.v4.app.FragmentActivity
-import android.support.v4.app.FragmentManager
-import android.support.v4.app.FragmentTransaction
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentTransaction
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.samih.aurat.dummy.DummyContent
 import kotlinx.android.synthetic.main.activity_main3.*
 import org.osmdroid.config.Configuration
@@ -43,7 +43,7 @@ class Main3Activity : FragmentActivity(), FavouritesFragment.OnListFragmentInter
     }
 
     fun FragmentActivity.replaceFragment(fragment: Fragment, frameId: Int) {
-        supportFragmentManager.inTransaction{replace(frameId, fragment)}
+        supportFragmentManager.inTransaction{replace(frameId, fragment).addToBackStack(null)}
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,7 +54,7 @@ class Main3Activity : FragmentActivity(), FavouritesFragment.OnListFragmentInter
         favouritesFragment = FavouritesFragment()
         Configuration.getInstance().userAgentValue = BuildConfig.APPLICATION_ID
         addFragment(MapFragment(), R.id.fragment_container)
-        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
+        //navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
 
     }
 

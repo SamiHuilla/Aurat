@@ -8,11 +8,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.android.synthetic.main.fragment_map.*
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.BoundingBox
 import org.osmdroid.views.MapView
+import org.osmdroid.views.overlay.Polyline
 
 
 /**
@@ -34,7 +37,9 @@ class MapFragment : Fragment() {
     private var map: MapView? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        MapManager.initializeOSM(24) // TODO: hae vain data, ja kuuntele muutoksia polylineissä
+
+        //TODO: poista fragmenttisekoilut, initializeOSM kutsutaan nyt joka kerta kun fragmentiin palataan
+        MapManager.initializeOSM(96)
         /*
         if (arguments != null) {
             mParam1 = arguments.getString(ARG_PARAM1)
@@ -48,6 +53,11 @@ class MapFragment : Fragment() {
                               savedInstanceState: Bundle?): View? {
         val rootView = inflater.inflate(R.layout.fragment_map, container, false)
         map = rootView.findViewById(R.id.map)
+        val mapDataViewModel = ViewModelProviders.of(this).get(MapDataViewModel::class.java)
+        mapDataViewModel.getPolylines().observe(this, Observer<ArrayList<Polyline>> { t ->
+            //map!!.overlayManager.clear()
+            map!!.overlayManager.addAll(t!!)
+            map!!.invalidate() })
         map!!.setTileSource(TileSourceFactory.MAPNIK)
         map!!.setScrollableAreaLimitDouble(BoundingBox(70.127855,31.748989, 59.687982, 19.236935))
         //map!!.setBuiltInZoomControls(true)
