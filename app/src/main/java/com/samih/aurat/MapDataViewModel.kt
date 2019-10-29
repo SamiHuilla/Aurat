@@ -1,6 +1,7 @@
 package com.samih.aurat
 
 import android.graphics.Color
+import android.graphics.Paint
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
@@ -23,7 +24,7 @@ class MapDataViewModel : ViewModel() {
             "pe" to "#fdbf6f",
             "ps" to "#ff7f00",
             "hn" to "#cab2d6",
-            "hj" to "#6a3d9a",
+            "hj" to "#B32EB3",
             "pn" to "#ffff99",
             "kv" to "#b15928",
             "ha" to "#0d4b75")
@@ -52,7 +53,9 @@ class MapDataViewModel : ViewModel() {
             polyline.color = Color.parseColor(eventColors[trail.second[0]])
             polyline.title = eventNames[trail.second[0]]
             polyline.subDescription = trail.second[1]
-            //TODO: lisää polylinen titleen/descriptioniin event type ja/tai aikaleima (Pairiin string[] esim)
+            polyline.paint.strokeJoin = Paint.Join.ROUND
+            polyline.paint.strokeCap = Paint.Cap.ROUND
+            polyline.width = 10.0f
             polylineList.add(polyline)
         }
         return polylineList

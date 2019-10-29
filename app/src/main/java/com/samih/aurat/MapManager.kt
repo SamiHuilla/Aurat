@@ -11,6 +11,7 @@ import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.math.floor
 
 /**
  * Created by sami on 19.6.2018.
@@ -19,6 +20,7 @@ object MapManager {
     private val parser: Parser = Parser()
     val centerOfTurku = GeoPoint(60.451628, 22.267044)
     private val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX", Locale.US)
+    private val weekdayFormat = SimpleDateFormat("EEEE", Locale.ENGLISH)
 
     //private val polylinesList = MutableLiveData<ArrayList<Polyline>>()
     private val polylinesList = MutableLiveData<ArrayList<Pair<ArrayList<GeoPoint>, Array<String>>>>()
@@ -83,7 +85,7 @@ object MapManager {
                 //polyline.setPoints(points)
                 //polyline.color = Color.parseColor(eventColors[currentType])
                 //activePolylines.add(polyline)
-                polylineData.add(Pair(points, arrayOf(currentType, time)))
+                polylineData.add(Pair(points, arrayOf(currentType, getEventAge(time))))
                 //map?.overlayManager?.add(polyline)
                 //map?.invalidate()
                 //polyline = Polyline()
@@ -122,7 +124,7 @@ object MapManager {
         //polyline.setPoints(points)
         //polyline.color = Color.parseColor(eventColors[currentType])
         //activePolylines.add(polyline)
-        polylineData.add(Pair(points, arrayOf(currentType, currentTime)))
+        polylineData.add(Pair(points, arrayOf(currentType, getEventAge(currentTime))))
         // TODO: activePolylines ViewModelin(?) LiveDataan
         //map?.overlayManager?.add(polyline)
         //map?.invalidate()
@@ -142,6 +144,39 @@ object MapManager {
             return 0
         }
         return diff
+    }
+
+    private fun timeDifference(now: Date, eventTime: String): Long {
+        val diff: Long
+        try {
+            val eventDate = dateFormat.parse(eventTime)
+            diff = now.time - eventDate.time
+        } catch (e: ParseException) {
+            e.printStackTrace()
+            return 0
+        }
+        return diff
+    }
+
+    /**
+     * Calculate time since the event
+     */
+    private fun getEventAge(eventTime: String): String {
+        val now = Date()
+        val differenceInSeconds = timeDifference(now, eventTime).toInt()/1000
+
+        return when {
+            differenceInSeconds < 3600 -> {
+                val minutes = floor(differenceInSeconds/60.0).toInt()
+                if (minutes > 1) String.format("%d minutes ago", minutes) else "1 minute ago"
+            }
+            differenceInSeconds < 24*3600 -> {
+                val hours = floor(differenceInSeconds / 3600.0).toInt()
+                if (hours > 1) String.format("%d hours ago", hours) else "1 hour ago"
+            }
+            else -> weekdayFormat.format(dateFormat.parse(eventTime))
+        }
+
     }
 
 }

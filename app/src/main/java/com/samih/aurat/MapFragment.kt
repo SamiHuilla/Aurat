@@ -16,6 +16,12 @@ import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.BoundingBox
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Polyline
+import android.R.layout
+import org.osmdroid.events.MapEventsReceiver
+import org.osmdroid.util.GeoPoint
+import org.osmdroid.views.overlay.infowindow.BasicInfoWindow
+import org.osmdroid.views.overlay.MapEventsOverlay
+import org.osmdroid.views.overlay.infowindow.InfoWindow
 
 
 /**
@@ -27,7 +33,8 @@ import org.osmdroid.views.overlay.Polyline
  * create an instance of this fragment.
  *
  */
-class MapFragment : Fragment() {
+class MapFragment : Fragment(), MapEventsReceiver {
+
     // TODO: Rename and change types of parameters
     /*
     private var mParam1: String? = null
@@ -38,8 +45,7 @@ class MapFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        //TODO: poista fragmenttisekoilut, initializeOSM kutsutaan nyt joka kerta kun fragmentiin palataan
-        MapManager.initializeOSM(96)
+        MapManager.initializeOSM(60)
         /*
         if (arguments != null) {
             mParam1 = arguments.getString(ARG_PARAM1)
@@ -53,9 +59,25 @@ class MapFragment : Fragment() {
                               savedInstanceState: Bundle?): View? {
         val rootView = inflater.inflate(R.layout.fragment_map, container, false)
         map = rootView.findViewById(R.id.map)
+        //TODO: latauksen ajaksi esim:
+        /*
+        mMapView.getOverlayManager().getTilesOverlay().setLoadingDrawable(getResources().getDrawable(R.drawable.loading));
+         */
+        val mapEventsOverlay = MapEventsOverlay(rootView.context, this)
+        map!!.overlays.add(0, mapEventsOverlay)
         val mapDataViewModel = ViewModelProviders.of(this).get(MapDataViewModel::class.java)
         mapDataViewModel.getPolylines().observe(this, Observer<ArrayList<Polyline>> { t ->
             //map!!.overlayManager.clear()
+            for (polyline in t){
+                polyline.setInfoWindow(BasicInfoWindow(org.osmdroid.bonuspack.R.layout.bonuspack_bubble, map))
+                polyline.setOnClickListener { polyline, mapView, eventPos ->
+                    InfoWindow.closeAllInfoWindowsOn(mapView)
+                    mapView.controller.animateTo(polyline.infoWindowLocation)
+                    polyline.showInfoWindow()
+                    return@setOnClickListener true
+                }
+
+            }
             map!!.overlayManager.addAll(t!!)
             map!!.invalidate() })
         map!!.setTileSource(TileSourceFactory.MAPNIK)
@@ -69,6 +91,15 @@ class MapFragment : Fragment() {
         //rootView.findViewById<FloatingActionButton>(R.id.floatingActionButton).setOnClickListener { toggleLayersMenu() }
         return rootView
 
+    }
+
+    override fun longPressHelper(p: GeoPoint?): Boolean {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun singleTapConfirmedHelper(p: GeoPoint?): Boolean {
+        InfoWindow.closeAllInfoWindowsOn(map)
+        return true
     }
 /*
     private fun toggleLayersMenu() {
