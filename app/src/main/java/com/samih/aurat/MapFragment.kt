@@ -17,6 +17,7 @@ import org.osmdroid.util.BoundingBox
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Polyline
 import android.R.layout
+import android.widget.ProgressBar
 import org.osmdroid.events.MapEventsReceiver
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.overlay.infowindow.BasicInfoWindow
@@ -42,6 +43,7 @@ class MapFragment : Fragment(), MapEventsReceiver {
     private var mListener: OnFragmentInteractionListener? = null
     */
     private var map: MapView? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -58,6 +60,7 @@ class MapFragment : Fragment(), MapEventsReceiver {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         val rootView = inflater.inflate(R.layout.fragment_map, container, false)
+        val spinner = rootView.findViewById<ProgressBar>(R.id.progressBar)
         map = rootView.findViewById(R.id.map)
         //TODO: latauksen ajaksi esim:
         /*
@@ -72,14 +75,26 @@ class MapFragment : Fragment(), MapEventsReceiver {
                 polyline.setInfoWindow(BasicInfoWindow(org.osmdroid.bonuspack.R.layout.bonuspack_bubble, map))
                 polyline.setOnClickListener { polyline, mapView, eventPos ->
                     InfoWindow.closeAllInfoWindowsOn(mapView)
-                    mapView.controller.animateTo(polyline.infoWindowLocation)
+                    if (!mapView.boundingBox.contains(polyline.infoWindowLocation)) {
+                        polyline.infoWindowLocation = eventPos
+                    }
                     polyline.showInfoWindow()
+                    mapView.controller.animateTo(polyline.infoWindowLocation)
+
                     return@setOnClickListener true
                 }
 
             }
             map!!.overlayManager.addAll(t!!)
             map!!.invalidate() })
+        mapDataViewModel.getRepoLoadingState().observe(this, Observer<Boolean> { loading ->
+            if (loading){
+                spinner.visibility = View.VISIBLE
+            }
+            else {
+                spinner.visibility = View.GONE
+            }
+        })
         map!!.setTileSource(TileSourceFactory.MAPNIK)
         map!!.setScrollableAreaLimitDouble(BoundingBox(70.127855,31.748989, 59.687982, 19.236935))
         //map!!.setBuiltInZoomControls(true)

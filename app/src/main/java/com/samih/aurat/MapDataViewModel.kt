@@ -7,7 +7,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import org.osmdroid.views.overlay.Polyline
-import android.icu.lang.UCharacter.GraphemeClusterBreak.T
 import org.osmdroid.util.GeoPoint
 
 
@@ -15,7 +14,7 @@ import org.osmdroid.util.GeoPoint
  * Created by sami on 14.10.2019.
  */
 class MapDataViewModel : ViewModel() {
-    private val eventColors: Map<String, String> = mapOf("au" to "#a6cee3",
+    private val eventColors: Map<String, String> = mapOf("au" to "#005BFF",
             "su" to "#1f78b4",
             "hi" to "#b2df8a",
             "nt" to "#33a02c",
@@ -55,7 +54,7 @@ class MapDataViewModel : ViewModel() {
             polyline.subDescription = trail.second[1]
             polyline.paint.strokeJoin = Paint.Join.ROUND
             polyline.paint.strokeCap = Paint.Cap.ROUND
-            polyline.width = 10.0f
+            polyline.width = 15.0f
             polylineList.add(polyline)
         }
         return polylineList
@@ -64,4 +63,13 @@ class MapDataViewModel : ViewModel() {
     fun getPolylines(): LiveData<ArrayList<Polyline>>  {
         return viewModelPolylines
     }
+
+    private val repoIsLoading: LiveData<Boolean> = Transformations.map(MapManager.getPlowsToLoad(), ::getLoadingState)
+    private fun getLoadingState(remainingDownloads: Int): Boolean {
+        return (remainingDownloads > 0)
+    }
+    fun getRepoLoadingState(): LiveData<Boolean>{
+        return repoIsLoading
+    }
+
 }

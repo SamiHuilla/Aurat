@@ -22,8 +22,18 @@ object MapManager {
     private val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX", Locale.US)
     private val weekdayFormat = SimpleDateFormat("EEEE", Locale.ENGLISH)
 
-    //private val polylinesList = MutableLiveData<ArrayList<Polyline>>()
+    private val plowsToLoad = MutableLiveData(0)
+    //private val isLoading = MutableLiveData<Boolean>()
     private val polylinesList = MutableLiveData<ArrayList<Pair<ArrayList<GeoPoint>, Array<String>>>>()
+
+    fun getPlowsToLoad(): LiveData<Int> {
+        return plowsToLoad
+    }
+    private fun reducePlowsToLoad() {
+        if (plowsToLoad.value!! > 0){
+            plowsToLoad.value = plowsToLoad.value?.minus(1)
+        }
+    }
     fun setPolylines (polylines: ArrayList<Pair<ArrayList<GeoPoint>, Array<String>>>) {
         polylinesList.value = polylines
     }
@@ -34,19 +44,21 @@ object MapManager {
     // TODO: kaikki mappiviewiin liittyvä fragmenttiin
     fun initializeOSM(hours: Int){
         PlowApiWrapper.fetchActivePlows(hours)
+        plowsToLoad.value = 10 // set an initial value, change later
     }
 
 
     fun parseActivePlows(activePlows: StringBuilder, hours: Int){
         if (activePlows.toString() != "[]"){
             val json = parser.parse(activePlows) as JsonArray<JsonObject>
+            plowsToLoad.value = json.size
             for (plow: JsonObject in json){
                 PlowApiWrapper.fetchIndividualPlowTrail(hours, plow.int("id"))
             }
 
         } else {
             //Toast.makeText(ctx, "No activity for the last $hours hours", Toast.LENGTH_SHORT).show()
-
+            plowsToLoad.value = 0
         }
 
     }
@@ -72,15 +84,24 @@ object MapManager {
         var points = ArrayList<GeoPoint>()
         var currentType = locationHistory[0].array<String>("events")?.get(0)!!  // get the first event type
         var currentTime: String = locationHistory[0]["timestamp"].toString()
+        var currentCoordinates = GeoPoint(locationHistory[0].array<Double>("coords")?.get(1)!!, locationHistory[0].array<Double>("coords")?.get(0)!!)
 
         for (location in locationHistory){
             val eventType = location.array<String>("events")?.get(0)!!
+            val coordinates = GeoPoint(location.array<Double>("coords")?.get(1)!!, location.array<Double>("coords")?.get(0)!!)
             val time: String = location["timestamp"].toString()
             val timeDifference = timeDifference(currentTime, time)
-            if (eventType == currentType && timeDifference < 60000){
-                points.add(GeoPoint(location.array<Double>("coords")?.get(1)!!, location.array<Double>("coords")?.get(0)!!))
+            val distance = coordinates.distanceToAsDouble(currentCoordinates)
+            // The vehicle is staying still
+            if (eventType == currentType && distance < 5){
+                points.add(coordinates)
+            }
+            // The vehicle is on a job
+            if (eventType == currentType && timeDifference < 60000 && distance < 1500){
+                points.add(coordinates)
                 // if type == points.add ELSE currentType -> pointsit polylineen ja polyline aktiivisiin --> molempien tyhjennys
             }
+            // The vehicle has started another job and/or moved to another location
             else {
                 //polyline.setPoints(points)
                 //polyline.color = Color.parseColor(eventColors[currentType])
@@ -90,10 +111,11 @@ object MapManager {
                 //map?.invalidate()
                 //polyline = Polyline()
                 points = ArrayList()
-                points.add(GeoPoint(location.array<Double>("coords")?.get(1)!!, location.array<Double>("coords")?.get(0)!!))
+                points.add(coordinates)
                 currentType = eventType
             }
             currentTime = time
+            currentCoordinates = coordinates
         }
         /*
         locationHistory.forEach { location ->
@@ -131,6 +153,7 @@ object MapManager {
         //polyline = Polyline()
         //polylinesList.postValue(activePolylines)
         polylinesList.setValue(polylineData)
+        reducePlowsToLoad()
     }
 
     private fun timeDifference(current: String, next: String): Long {
