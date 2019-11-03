@@ -18,39 +18,39 @@
         app:layout_constraintStart_toStartOf="@+id/map"
         app:layout_constraintTop_toTopOf="@+id/map"
         tools:visibility="invisible" />
-
-    <androidx.cardview.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/layersCard"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="5dp"
-        android:layout_marginRight="10dp"
-        android:visibility="invisible"
-        card_view:cardBackgroundColor="#E6E6E6"
-        card_view:cardCornerRadius="8dp"
-        card_view:cardElevation="8dp"
-        card_view:layout_constraintRight_toLeftOf="@+id/floatingActionButton"
-        card_view:layout_constraintTop_toTopOf="@+id/floatingActionButton">
-
-        <RelativeLayout
-            android:layout_width="match_parent"
+    <!--
+        <androidx.cardview.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/layersCard"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            tools:padding="5dp">
+            android:padding="5dp"
+            android:layout_marginRight="10dp"
+            android:visibility="invisible"
+            card_view:cardBackgroundColor="#E6E6E6"
+            card_view:cardCornerRadius="8dp"
+            card_view:cardElevation="8dp"
+            card_view:layout_constraintRight_toLeftOf="@+id/floatingActionButton"
+            card_view:layout_constraintTop_toTopOf="@+id/floatingActionButton">
 
-            <TextView
-                android:id="@+id/layersHeading"
-                android:layout_width="wrap_content"
+            <RelativeLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Layers" />
+                tools:padding="5dp">
 
-            <!--
-            <ImageButton
-                android:id="@+id/plowsButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/layersHeading"
-                android:foreground="@drawable/ic_snowplow" />
-            -->
+                <TextView
+                    android:id="@+id/layersHeading"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Layers" />
+
+
+                <ImageButton
+                    android:id="@+id/plowsButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/layersHeading"
+                    android:foreground="@drawable/ic_snowplow" />
+
             <CheckBox
                 android:id="@+id/checkBoxPlows"
                 android:layout_width="wrap_content"
@@ -73,7 +73,7 @@
         app:layout_constraintEnd_toEndOf="@+id/map"
         app:layout_constraintTop_toTopOf="@+id/map"
         app:srcCompat="@drawable/ic_layers_black_24dp" />
-
+-->
     <org.osmdroid.views.MapView
         android:id="@+id/map"
         android:layout_width="fill_parent"

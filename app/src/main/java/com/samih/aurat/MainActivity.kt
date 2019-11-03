@@ -35,7 +35,7 @@ class MainActivity : Activity() {
         Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx))
         setContentView(R.layout.activity_main)
 
-       // MapManager.initializeOSM(12)
+       // TrailRepo.initializeOSM(12)
     }
 
 

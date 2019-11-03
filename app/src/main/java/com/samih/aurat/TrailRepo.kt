@@ -5,8 +5,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.beust.klaxon.*
 import com.samih.aurat.BuildConfig.BASE_URL
+import org.jetbrains.anko.doAsync
+import org.jetbrains.anko.doAsyncResult
+import org.jetbrains.anko.uiThread
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.overlay.Polyline
+import java.net.URL
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
@@ -16,7 +20,7 @@ import kotlin.math.floor
 /**
  * Created by sami on 19.6.2018.
  */
-object MapManager {
+class TrailRepo {
     private val parser: Parser = Parser()
     val centerOfTurku = GeoPoint(60.451628, 22.267044)
     private val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX", Locale.US)
@@ -43,17 +47,17 @@ object MapManager {
 
     // TODO: kaikki mappiviewiin liittyvä fragmenttiin
     fun initializeOSM(hours: Int){
-        PlowApiWrapper.fetchActivePlows(hours)
+        fetchActivePlows(hours)
         plowsToLoad.value = 10 // set an initial value, change later
     }
 
 
-    fun parseActivePlows(activePlows: StringBuilder, hours: Int){
+    private fun parseActivePlows(activePlows: StringBuilder, hours: Int){
         if (activePlows.toString() != "[]"){
             val json = parser.parse(activePlows) as JsonArray<JsonObject>
             plowsToLoad.value = json.size
             for (plow: JsonObject in json){
-                PlowApiWrapper.fetchIndividualPlowTrail(hours, plow.int("id"))
+                fetchIndividualPlowTrail(hours, plow.int("id"))
             }
 
         } else {
@@ -63,7 +67,7 @@ object MapManager {
 
     }
 
-    fun parseIndividualPlowData(plowDataStr: StringBuilder){
+    private fun parseIndividualPlowData(plowDataStr: StringBuilder){
         if (plowDataStr.toString() != "[]"){
             val json = parser.parse(plowDataStr) as JsonObject
             addMapLine(json)
@@ -201,5 +205,26 @@ object MapManager {
         }
 
     }
+
+
+    private fun fetchActivePlows(hours: Int){
+        doAsyncResult {
+            val result = StringBuilder(URL(BASE_URL + "?since=" + hours + "hours+ago&limit=50").readText())
+            uiThread {
+                parseActivePlows(result, hours)
+            }
+        }
+
+    }
+
+    private fun fetchIndividualPlowTrail(hours: Int, id: Int?){
+        doAsync {
+            val result = StringBuilder(URL(BASE_URL + id + "?since=" + hours + "hours+ago&temporal_resolution=1").readText())
+            uiThread {
+                parseIndividualPlowData(result)
+            }
+        }
+    }
+
 
 }

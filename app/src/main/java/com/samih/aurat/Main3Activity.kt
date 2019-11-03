@@ -1,6 +1,9 @@
 package com.samih.aurat
 
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
@@ -10,12 +13,21 @@ import com.samih.aurat.dummy.DummyContent
 import kotlinx.android.synthetic.main.activity_main3.*
 import org.osmdroid.config.Configuration
 
+import com.mikepenz.aboutlibraries.LibsBuilder
+import com.mikepenz.aboutlibraries.ui.LibsFragment
+import androidx.core.app.ComponentActivity.ExtraData
+import androidx.core.content.ContextCompat.getSystemService
+import android.icu.lang.UCharacter.GraphemeClusterBreak.T
+import android.R.attr.fragment
+import com.mikepenz.aboutlibraries.ui.LibsSupportFragment
 
-class Main3Activity : FragmentActivity(), FavouritesFragment.OnListFragmentInteractionListener {
+
+class Main3Activity : AppCompatActivity(), FavouritesFragment.OnListFragmentInteractionListener {
 
     lateinit var mFragmentManager: FragmentManager
     lateinit var mapFragment: MapFragment
     lateinit var favouritesFragment: FavouritesFragment
+    lateinit var aboutFragment: LibsSupportFragment
     private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
         when (item.itemId) {
             R.id.navigation_map -> {
@@ -52,10 +64,25 @@ class Main3Activity : FragmentActivity(), FavouritesFragment.OnListFragmentInter
         mFragmentManager = supportFragmentManager
         mapFragment = MapFragment()
         favouritesFragment = FavouritesFragment()
+        aboutFragment = LibsBuilder()
+                //Pass the fields of your application to the lib so it can find all external lib information
+                .withFields(R.string::class.java.fields)
+                //get the fragment
+                .supportFragment()
         Configuration.getInstance().userAgentValue = BuildConfig.APPLICATION_ID
         addFragment(MapFragment(), R.id.fragment_container)
         //navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
 
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_main, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        replaceFragment(aboutFragment, R.id.fragment_container)
+        return super.onOptionsItemSelected(item)
     }
 
     override fun onListFragmentInteraction(item: DummyContent.DummyItem?) {

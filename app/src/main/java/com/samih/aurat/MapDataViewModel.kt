@@ -3,17 +3,20 @@ package com.samih.aurat
 import android.graphics.Color
 import android.graphics.Paint
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
+import com.samih.aurat.PlansRepo.JobPlan
 import org.osmdroid.views.overlay.Polyline
 import org.osmdroid.util.GeoPoint
+import org.osmdroid.views.overlay.Marker
 
 
 /**
  * Created by sami on 14.10.2019.
  */
 class MapDataViewModel : ViewModel() {
+    private val trailRepo = TrailRepo()
+    private val plansRepo = PlansRepo()
     private val eventColors: Map<String, String> = mapOf("au" to "#005BFF",
             "su" to "#1f78b4",
             "hi" to "#b2df8a",
@@ -42,8 +45,14 @@ class MapDataViewModel : ViewModel() {
             "pn" to "Coating",
             "ha" to "Brushing and de-icing with salt"
     )
-
-    private val viewModelPolylines: LiveData<ArrayList<Polyline>>  = Transformations.map(MapManager.getPolylines(), ::generatePolylines)
+    private val viewModelPlanData: LiveData<ArrayList<JobPlan>> = Transformations.map(plansRepo.getPlanList()){ data -> data}
+    fun getPlanData(): LiveData<ArrayList<JobPlan>>{
+        return viewModelPlanData
+    }
+    fun plansRepo(): PlansRepo{
+        return plansRepo
+    }
+    private val viewModelPolylines: LiveData<ArrayList<Polyline>>  = Transformations.map(trailRepo.getPolylines(), ::generatePolylines)
     private fun generatePolylines(data: ArrayList<Pair<ArrayList<GeoPoint>, Array<String>>>): ArrayList<Polyline> {
         val polylineList = ArrayList<Polyline>()
         for (trail in data){
@@ -59,12 +68,15 @@ class MapDataViewModel : ViewModel() {
         }
         return polylineList
     }
-
     fun getPolylines(): LiveData<ArrayList<Polyline>>  {
         return viewModelPolylines
     }
+    fun trailRepo(): TrailRepo {
+        return trailRepo
+    }
 
-    private val repoIsLoading: LiveData<Boolean> = Transformations.map(MapManager.getPlowsToLoad(), ::getLoadingState)
+
+    private val repoIsLoading: LiveData<Boolean> = Transformations.map(trailRepo.getPlowsToLoad(), ::getLoadingState)
     private fun getLoadingState(remainingDownloads: Int): Boolean {
         return (remainingDownloads > 0)
     }

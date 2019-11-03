@@ -1,27 +1,23 @@
 package com.samih.aurat
 
-import android.content.Context
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-import kotlinx.android.synthetic.main.fragment_map.*
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.BoundingBox
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Polyline
-import android.R.layout
 import android.widget.ProgressBar
+import com.samih.aurat.PlansRepo.JobPlan
 import org.osmdroid.events.MapEventsReceiver
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.overlay.infowindow.BasicInfoWindow
 import org.osmdroid.views.overlay.MapEventsOverlay
+import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.infowindow.InfoWindow
 
 
@@ -43,11 +39,14 @@ class MapFragment : Fragment(), MapEventsReceiver {
     private var mListener: OnFragmentInteractionListener? = null
     */
     private var map: MapView? = null
+    private lateinit var mapDataViewModel: MapDataViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        mapDataViewModel = ViewModelProviders.of(this).get(MapDataViewModel::class.java)
+        mapDataViewModel.plansRepo().downloadPlans()
+        mapDataViewModel.trailRepo().initializeOSM(90)
 
-        MapManager.initializeOSM(60)
         /*
         if (arguments != null) {
             mParam1 = arguments.getString(ARG_PARAM1)
@@ -62,16 +61,18 @@ class MapFragment : Fragment(), MapEventsReceiver {
         val rootView = inflater.inflate(R.layout.fragment_map, container, false)
         val spinner = rootView.findViewById<ProgressBar>(R.id.progressBar)
         map = rootView.findViewById(R.id.map)
-        //TODO: latauksen ajaksi esim:
-        /*
-        mMapView.getOverlayManager().getTilesOverlay().setLoadingDrawable(getResources().getDrawable(R.drawable.loading));
-         */
+
         val mapEventsOverlay = MapEventsOverlay(rootView.context, this)
         map!!.overlays.add(0, mapEventsOverlay)
-        val mapDataViewModel = ViewModelProviders.of(this).get(MapDataViewModel::class.java)
         mapDataViewModel.getPolylines().observe(this, Observer<ArrayList<Polyline>> { t ->
             //map!!.overlayManager.clear()
+
             for (polyline in t){
+                if (polyline.points.isNullOrEmpty()){
+                    map!!.overlayManager.clear()
+                    mapDataViewModel.trailRepo().initializeOSM(60)
+                    return@Observer
+                }
                 polyline.setInfoWindow(BasicInfoWindow(org.osmdroid.bonuspack.R.layout.bonuspack_bubble, map))
                 polyline.setOnClickListener { polyline, mapView, eventPos ->
                     InfoWindow.closeAllInfoWindowsOn(mapView)
@@ -95,6 +96,17 @@ class MapFragment : Fragment(), MapEventsReceiver {
                 spinner.visibility = View.GONE
             }
         })
+        mapDataViewModel.getPlanData().observe(this, Observer<ArrayList<JobPlan>> { t ->
+            for (data in t){
+                val marker = Marker(map)
+                marker.position = GeoPoint(data.latitude, data.longitude)
+                marker.title = data.street + ", " + data.date
+                marker.subDescription = data.description
+                marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+                map!!.overlays.add(marker)
+                map!!.invalidate()
+            }
+        })
         map!!.setTileSource(TileSourceFactory.MAPNIK)
         map!!.setScrollableAreaLimitDouble(BoundingBox(70.127855,31.748989, 59.687982, 19.236935))
         //map!!.setBuiltInZoomControls(true)
@@ -102,7 +114,7 @@ class MapFragment : Fragment(), MapEventsReceiver {
 
         val mapController = map!!.controller
         mapController.setZoom(15.0)
-        mapController.setCenter(MapManager.centerOfTurku) // TODO: use location if enabled
+        mapController.setCenter(mapDataViewModel.trailRepo().centerOfTurku) // TODO: use location if enabled
         //rootView.findViewById<FloatingActionButton>(R.id.floatingActionButton).setOnClickListener { toggleLayersMenu() }
         return rootView
 
