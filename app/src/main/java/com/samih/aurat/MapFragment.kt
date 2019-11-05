@@ -25,6 +25,7 @@ import android.text.method.LinkMovementMethod
 import android.text.Html
 import android.text.Html.FROM_HTML_MODE_COMPACT
 import android.widget.TextView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import org.osmdroid.tileprovider.tilesource.ThunderforestTileSource
 import org.osmdroid.tileprovider.tilesource.TileSourcePolicy
 import org.osmdroid.tileprovider.tilesource.XYTileSource
@@ -73,12 +74,15 @@ class MapFragment : Fragment(), MapEventsReceiver {
         map = rootView.findViewById(R.id.map)
 
         // Create a custom tile source
-        val tileSource = ThunderforestTileSource(context, ThunderforestTileSource.MOBILE_ATLAS)
+        val tileSource = ThunderforestTileSource(rootView.context, ThunderforestTileSource.CYCLE)
         map!!.setTileSource(tileSource)
 
-        val text = "© <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors"
+        val text = "Maps © <a href=\"https://www.thunderforest.com\">Thunderforest</a><br>" +
+                "Data © <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors " +
+                "& <a href=\"https://creativecommons.org/licenses/by/4.0/legalcode\">City of Turku</a>"
         val textView = rootView.findViewById<TextView>(R.id.creditsTextView)
         textView.text = Html.fromHtml(text, FROM_HTML_MODE_COMPACT)
+        //textView.text = tileSource.copyrightNotice
         textView.movementMethod = LinkMovementMethod.getInstance()
 
         val mapEventsOverlay = MapEventsOverlay(rootView.context, this)
@@ -137,7 +141,7 @@ class MapFragment : Fragment(), MapEventsReceiver {
                 map!!.invalidate()
             }
         })
-        map!!.setTileSource(TileSourceFactory.MAPNIK)
+        //map!!.setTileSource(TileSourceFactory.MAPNIK)
         map!!.setScrollableAreaLimitDouble(BoundingBox(60.6463, 22.5913, 60.3286, 21.8195))
         map!!.isHorizontalMapRepetitionEnabled = false
         map!!.isVerticalMapRepetitionEnabled = false
@@ -168,6 +172,6 @@ class MapFragment : Fragment(), MapEventsReceiver {
             layersCard.visibility = View.VISIBLE
         }
     }
+*/
 
- */
 }

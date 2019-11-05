@@ -13,11 +13,13 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
+        android:padding="2dp"
         android:background="#9EFFFFFF"
         android:backgroundTint="#C1FFFFFF"
         android:elevation="10dp"
         android:text="@string/text_credit_map"
         android:textColorLink="#2196F3"
+        android:textAlignment="viewEnd"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="@+id/map"
         app:layout_constraintEnd_toEndOf="@+id/map" />
@@ -34,6 +36,7 @@
         app:layout_constraintStart_toStartOf="@+id/map"
         app:layout_constraintTop_toTopOf="@+id/map"
         tools:visibility="invisible" />
+
     <!--
         <androidx.cardview.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
             android:id="@+id/layersCard"
@@ -57,7 +60,7 @@
                     android:id="@+id/layersHeading"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Layers" />
+                    android:text="Map type" />
 
 
                 <ImageButton
@@ -67,12 +70,24 @@
                     android:layout_below="@id/layersHeading"
                     android:foreground="@drawable/ic_snowplow" />
 
-            <CheckBox
-                android:id="@+id/checkBoxPlows"
+
+            <RadioGroup
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/layersHeading"
-                android:text="Plows" />
+                android:layout_below="@id/layersHeading">
+                <RadioButton
+                    android:id="@+id/radioCycleMap"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:text="Cycle map" />
+                <RadioButton
+                    android:id="@+id/radioMobileAtlas"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Mobile atlas" />
+            </RadioGroup>
+
         </RelativeLayout>
     </androidx.cardview.widget.CardView>
 
