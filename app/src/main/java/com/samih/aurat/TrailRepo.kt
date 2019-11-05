@@ -1,6 +1,6 @@
 package com.samih.aurat
 
-import android.graphics.Color
+
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.beust.klaxon.*
@@ -9,7 +9,6 @@ import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.doAsyncResult
 import org.jetbrains.anko.uiThread
 import org.osmdroid.util.GeoPoint
-import org.osmdroid.views.overlay.Polyline
 import java.net.URL
 import java.text.ParseException
 import java.text.SimpleDateFormat
@@ -27,7 +26,6 @@ class TrailRepo {
     private val weekdayFormat = SimpleDateFormat("EEEE", Locale.ENGLISH)
 
     private val plowsToLoad = MutableLiveData(0)
-    //private val isLoading = MutableLiveData<Boolean>()
     private val polylinesList = MutableLiveData<ArrayList<Pair<ArrayList<GeoPoint>, Array<String>>>>()
 
     fun getPlowsToLoad(): LiveData<Int> {
@@ -45,7 +43,6 @@ class TrailRepo {
         return polylinesList
     }
 
-    // TODO: kaikki mappiviewiin liittyvä fragmenttiin
     fun initializeOSM(hours: Int){
         fetchActivePlows(hours)
         plowsToLoad.value = 10 // set an initial value, change later
@@ -73,7 +70,7 @@ class TrailRepo {
             addMapLine(json)
         } else {
             //Toast.makeText(ctx, "No activity for plow $id for the last $hours hours", Toast.LENGTH_SHORT).show()
-
+            //TODO: ilmoita jotenkin
         }
 
 
@@ -121,41 +118,8 @@ class TrailRepo {
             currentTime = time
             currentCoordinates = coordinates
         }
-        /*
-        locationHistory.forEach { location ->
-            val eventType = location.array<String>("events")?.get(0)!!
-            val time: String = location["timestamp"].toString()
-            val timeDifference = timeDifference(currentTime, time)
-            if (eventType == currentType && timeDifference < 100000){
-                points.add(GeoPoint(location.array<Double>("coords")?.get(1)!!, location.array<Double>("coords")?.get(0)!!))
-                // if type == points.add ELSE currentType -> pointsit polylineen ja polyline aktiivisiin --> molempien tyhjennys
-            }
-            else {
-                //polyline.setPoints(points)
-                //polyline.color = Color.parseColor(eventColors[currentType])
-                //activePolylines.add(polyline)
-                polylineData.add(Pair(points, currentType))
-                //map?.overlayManager?.add(polyline)
-                //map?.invalidate()
-                //polyline = Polyline()
-                points.clear()
-                points.add(GeoPoint(location.array<Double>("coords")?.get(1)!!, location.array<Double>("coords")?.get(0)!!))
-                currentType = eventType
-            }
-            currentTime = time
 
-        }
-
-         */
-        //polyline.setPoints(points)
-        //polyline.color = Color.parseColor(eventColors[currentType])
-        //activePolylines.add(polyline)
         polylineData.add(Pair(points, arrayOf(currentType, getEventAge(currentTime))))
-        // TODO: activePolylines ViewModelin(?) LiveDataan
-        //map?.overlayManager?.add(polyline)
-        //map?.invalidate()
-        //polyline = Polyline()
-        //polylinesList.postValue(activePolylines)
         polylinesList.setValue(polylineData)
         reducePlowsToLoad()
     }

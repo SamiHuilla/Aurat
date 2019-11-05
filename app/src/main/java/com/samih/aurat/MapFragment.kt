@@ -12,13 +12,23 @@ import org.osmdroid.util.BoundingBox
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Polyline
 import android.widget.ProgressBar
+import com.google.android.material.snackbar.Snackbar
 import com.samih.aurat.PlansRepo.JobPlan
+import kotlinx.android.synthetic.main.fragment_map.*
 import org.osmdroid.events.MapEventsReceiver
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.overlay.infowindow.BasicInfoWindow
 import org.osmdroid.views.overlay.MapEventsOverlay
 import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.infowindow.InfoWindow
+import android.text.method.LinkMovementMethod
+import android.text.Html
+import android.text.Html.FROM_HTML_MODE_COMPACT
+import android.widget.TextView
+import org.osmdroid.tileprovider.tilesource.ThunderforestTileSource
+import org.osmdroid.tileprovider.tilesource.TileSourcePolicy
+import org.osmdroid.tileprovider.tilesource.XYTileSource
+import org.osmdroid.views.CustomZoomButtonsController
 
 
 /**
@@ -45,7 +55,7 @@ class MapFragment : Fragment(), MapEventsReceiver {
         super.onCreate(savedInstanceState)
         mapDataViewModel = ViewModelProviders.of(this).get(MapDataViewModel::class.java)
         mapDataViewModel.plansRepo().downloadPlans()
-        mapDataViewModel.trailRepo().initializeOSM(90)
+        mapDataViewModel.trailRepo().initializeOSM(60)
 
         /*
         if (arguments != null) {
@@ -61,6 +71,15 @@ class MapFragment : Fragment(), MapEventsReceiver {
         val rootView = inflater.inflate(R.layout.fragment_map, container, false)
         val spinner = rootView.findViewById<ProgressBar>(R.id.progressBar)
         map = rootView.findViewById(R.id.map)
+
+        // Create a custom tile source
+        val tileSource = ThunderforestTileSource(context, ThunderforestTileSource.MOBILE_ATLAS)
+        map!!.setTileSource(tileSource)
+
+        val text = "© <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors"
+        val textView = rootView.findViewById<TextView>(R.id.creditsTextView)
+        textView.text = Html.fromHtml(text, FROM_HTML_MODE_COMPACT)
+        textView.movementMethod = LinkMovementMethod.getInstance()
 
         val mapEventsOverlay = MapEventsOverlay(rootView.context, this)
         map!!.overlays.add(0, mapEventsOverlay)
@@ -94,22 +113,35 @@ class MapFragment : Fragment(), MapEventsReceiver {
             }
             else {
                 spinner.visibility = View.GONE
+                if (mapDataViewModel.getPolylines().value.isNullOrEmpty()){
+                    Snackbar.make(mapContainer, "No recent activity", Snackbar.LENGTH_LONG).show()
+                    // No polyline
+                }
             }
         })
         mapDataViewModel.getPlanData().observe(this, Observer<ArrayList<JobPlan>> { t ->
             for (data in t){
                 val marker = Marker(map)
                 marker.position = GeoPoint(data.latitude, data.longitude)
-                marker.title = data.street + ", " + data.date
-                marker.subDescription = data.description
-                marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+                marker.title = data.street + " " + data.description
+                marker.subDescription = data.date
+                marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+                marker.setOnMarkerClickListener { marker, mapView ->
+                    InfoWindow.closeAllInfoWindowsOn(mapView)
+                    marker.showInfoWindow()
+                    mapView.controller.animateTo(marker.position)
+                    return@setOnMarkerClickListener true
+                }
+                //TODO: vaihda siistimpi ikoni
                 map!!.overlays.add(marker)
                 map!!.invalidate()
             }
         })
         map!!.setTileSource(TileSourceFactory.MAPNIK)
-        map!!.setScrollableAreaLimitDouble(BoundingBox(70.127855,31.748989, 59.687982, 19.236935))
-        //map!!.setBuiltInZoomControls(true)
+        map!!.setScrollableAreaLimitDouble(BoundingBox(60.6463, 22.5913, 60.3286, 21.8195))
+        map!!.isHorizontalMapRepetitionEnabled = false
+        map!!.isVerticalMapRepetitionEnabled = false
+        map!!.zoomController.setVisibility(CustomZoomButtonsController.Visibility.NEVER)
         map!!.setMultiTouchControls(true)
 
         val mapController = map!!.controller
@@ -139,67 +171,3 @@ class MapFragment : Fragment(), MapEventsReceiver {
 
  */
 }
-
-    // TODO: Rename method, update argument and hook method into UI event
-    /*
-    fun onButtonPressed(uri: Uri) {
-        mListener?.onFragmentInteraction(uri)
-    }
-    */
-
-    /*
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        if (context is OnFragmentInteractionListener) {
-            mListener = context
-        } else {
-            throw RuntimeException(context.toString() + " must implement OnFragmentInteractionListener")
-        }
-    }
-
-    override fun onDetach() {
-        super.onDetach()
-        mListener = null
-    }
-    */
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     *
-     *
-     * See the Android Training lesson [Communicating with Other Fragments]
-     * (http://developer.android.com/training/basics/fragments/communicating.html)
-     * for more information.
-     */
-
-    /*
-    interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        fun onFragmentInteraction(uri: Uri)
-    }
-
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment BlankFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String): MapFragment {
-            return MapFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
-        }
-    }
-    */
-

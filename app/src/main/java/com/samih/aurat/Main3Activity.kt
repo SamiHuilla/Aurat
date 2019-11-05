@@ -63,18 +63,22 @@ class Main3Activity : AppCompatActivity(), FavouritesFragment.OnListFragmentInte
         setContentView(R.layout.activity_main3)
         mFragmentManager = supportFragmentManager
         mapFragment = MapFragment()
+        /*
         favouritesFragment = FavouritesFragment()
         aboutFragment = LibsBuilder()
                 //Pass the fields of your application to the lib so it can find all external lib information
                 .withFields(R.string::class.java.fields)
                 //get the fragment
                 .supportFragment()
+
+         */
         Configuration.getInstance().userAgentValue = BuildConfig.APPLICATION_ID
         addFragment(MapFragment(), R.id.fragment_container)
         //navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
 
     }
 
+    /*
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
         return super.onCreateOptionsMenu(menu)
@@ -84,7 +88,7 @@ class Main3Activity : AppCompatActivity(), FavouritesFragment.OnListFragmentInte
         replaceFragment(aboutFragment, R.id.fragment_container)
         return super.onOptionsItemSelected(item)
     }
-
+*/
     override fun onListFragmentInteraction(item: DummyContent.DummyItem?) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }

@@ -129,7 +129,7 @@ class PlansRepo {
                 run {
                     var line: String? = reader.readLine()
                     while (line != null) {
-                        total.append(line)
+                        total.append(line).append('\n')
                         line = reader.readLine()
                     }
                 }
