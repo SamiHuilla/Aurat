@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Aurat</string>
+    <string name="au">Auraus</string>
+    <string name="hi">Hiekoitus</string>
+    <string name="hj">Harjaus</string>
+    <string name="hn">Hiekannosto</string>
+    <string name="hs">Höyläys</string>
+    <string name="kv">Kevyen liikenteen väylät</string>
+    <string name="ln">Lanaus</string>
+    <string name="nt">Niitto</string>
+    <string name="pe">Kadunpesu</string>
+    <string name="pn">Pinnoitus</string>
+    <string name="ps">Pölynsidonta</string>
+    <string name="su">Suolaus</string>
+    <string name="ha">Harjasuolaus</string>
+    <string name="hour">1 tunti sitten</string>
+    <string name="hours">%1$d tuntia sitten</string>
+    <string name="minute">1 minuutti sitten</string>
+    <string name="minutes">%1$d minuuttia sitten</string>
+    <string name="text_snackbar">Ei tapahtumia viimeaikoina</string>
+</resources>

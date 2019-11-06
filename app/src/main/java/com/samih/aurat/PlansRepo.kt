@@ -9,7 +9,6 @@ import java.io.*
 import java.net.HttpURLConnection
 import java.net.URL
 import com.opencsv.CSVReader
-import java.lang.IllegalStateException
 
 class PlansRepo {
     private val DEBUG_TAG = "PlansRepo"
@@ -48,7 +47,6 @@ class PlansRepo {
 
             override fun onPostExecute(result: String) {
                 val reader = CSVReader(StringReader(result))
-                //val reader = BufferedReader(InputStreamReader(stream, "UTF-8"))
                 val plans = ArrayList<JobPlan>()
 
                 run {

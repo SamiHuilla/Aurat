@@ -43,12 +43,6 @@ import org.osmdroid.views.CustomZoomButtonsController
  */
 class MapFragment : Fragment(), MapEventsReceiver {
 
-    // TODO: Rename and change types of parameters
-    /*
-    private var mParam1: String? = null
-    private var mParam2: String? = null
-    private var mListener: OnFragmentInteractionListener? = null
-    */
     private var map: MapView? = null
     private lateinit var mapDataViewModel: MapDataViewModel
 
@@ -57,13 +51,6 @@ class MapFragment : Fragment(), MapEventsReceiver {
         mapDataViewModel = ViewModelProviders.of(this).get(MapDataViewModel::class.java)
         mapDataViewModel.plansRepo().downloadPlans()
         mapDataViewModel.trailRepo().initializeOSM(60)
-
-        /*
-        if (arguments != null) {
-            mParam1 = arguments.getString(ARG_PARAM1)
-            mParam2 = arguments.getString(ARG_PARAM2)
-        }
-        */
 
     }
 
@@ -88,15 +75,9 @@ class MapFragment : Fragment(), MapEventsReceiver {
         val mapEventsOverlay = MapEventsOverlay(rootView.context, this)
         map!!.overlays.add(0, mapEventsOverlay)
         mapDataViewModel.getPolylines().observe(this, Observer<ArrayList<Polyline>> { t ->
-            //map!!.overlayManager.clear()
 
             for (polyline in t){
-                if (polyline.points.isNullOrEmpty()){
-                    map!!.overlayManager.clear()
-                    mapDataViewModel.trailRepo().initializeOSM(60)
-                    return@Observer
-                }
-                polyline.setInfoWindow(BasicInfoWindow(org.osmdroid.bonuspack.R.layout.bonuspack_bubble, map))
+                polyline.infoWindow = BasicInfoWindow(org.osmdroid.bonuspack.R.layout.bonuspack_bubble, map)
                 polyline.setOnClickListener { polyline, mapView, eventPos ->
                     InfoWindow.closeAllInfoWindowsOn(mapView)
                     if (!mapView.boundingBox.contains(polyline.infoWindowLocation)) {
@@ -118,7 +99,7 @@ class MapFragment : Fragment(), MapEventsReceiver {
             else {
                 spinner.visibility = View.GONE
                 if (mapDataViewModel.getPolylines().value.isNullOrEmpty()){
-                    Snackbar.make(mapContainer, "No recent activity", Snackbar.LENGTH_LONG).show()
+                    Snackbar.make(mapContainer, getString(R.string.text_snackbar), Snackbar.LENGTH_LONG).show()
                     // No polyline
                 }
             }
@@ -136,12 +117,12 @@ class MapFragment : Fragment(), MapEventsReceiver {
                     mapView.controller.animateTo(marker.position)
                     return@setOnMarkerClickListener true
                 }
-                //TODO: vaihda siistimpi ikoni
+
                 map!!.overlays.add(marker)
                 map!!.invalidate()
             }
         })
-        //map!!.setTileSource(TileSourceFactory.MAPNIK)
+
         map!!.setScrollableAreaLimitDouble(BoundingBox(60.6463, 22.5913, 60.3286, 21.8195))
         map!!.isHorizontalMapRepetitionEnabled = false
         map!!.isVerticalMapRepetitionEnabled = false
@@ -150,8 +131,8 @@ class MapFragment : Fragment(), MapEventsReceiver {
 
         val mapController = map!!.controller
         mapController.setZoom(15.0)
-        mapController.setCenter(mapDataViewModel.trailRepo().centerOfTurku) // TODO: use location if enabled
-        //rootView.findViewById<FloatingActionButton>(R.id.floatingActionButton).setOnClickListener { toggleLayersMenu() }
+        mapController.setCenter(mapDataViewModel.trailRepo().centerOfTurku)
+
         return rootView
 
     }
@@ -164,14 +145,5 @@ class MapFragment : Fragment(), MapEventsReceiver {
         InfoWindow.closeAllInfoWindowsOn(map)
         return true
     }
-/*
-    private fun toggleLayersMenu() {
-        if (layersCard.visibility == View.VISIBLE) {
-            layersCard.visibility = View.INVISIBLE
-        } else {
-            layersCard.visibility = View.VISIBLE
-        }
-    }
-*/
 
 }
