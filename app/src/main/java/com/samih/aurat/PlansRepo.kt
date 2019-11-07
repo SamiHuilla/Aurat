@@ -10,12 +10,19 @@ import java.net.HttpURLConnection
 import java.net.URL
 import com.opencsv.CSVReader
 
+/*
+Provides cleaning plan data for the ViewModel.
+Fetches and parses the .csv file from the cleaning plan API.
+ */
 class PlansRepo {
     private val DEBUG_TAG = "PlansRepo"
     private val PLANS_URL = "http://puhdistussuunnitelmat.fi/turku/api/export.csv"
 
     private val planList = MutableLiveData<ArrayList<JobPlan>>()
 
+    /*
+    Data class for holding data of a single cleaning plan
+     */
     data class JobPlan(var date: String,
                        var street: String,
                        var description: String,
@@ -30,7 +37,13 @@ class PlansRepo {
     fun downloadPlans() {
             DownloadPlansTask(this).execute(PLANS_URL)
     }
+
     companion object {
+
+        /*
+        AsyncTask for downloading the .csv file from server.
+        Updates the planList LiveData object in onPostExecute().
+         */
         private class DownloadPlansTask(private val plansRepo: PlansRepo) : AsyncTask<String, Void, String>() {
 
             override fun doInBackground(vararg urls: String): String {
@@ -71,11 +84,8 @@ class PlansRepo {
             }
 
 
-            /**
-             * Given a URL, establishes an HttpUrlConnection and retrieves the web page content as a InputStream, which it returns as a string.
-             * @param fileUrl URL of the remote content
-             * @return String of the web page content, JSON formatted.
-             * @throws IOException
+            /*
+            Connects to the URL, downloads the content and returns it as a string
              */
             @Throws(IOException::class)
             private fun downloadUrl(fileUrl: String): String {
@@ -98,7 +108,6 @@ class PlansRepo {
                     input = BufferedInputStream(url.openStream(),
                             8192)
 
-
                     // Convert the InputStream into a string
                     return readIt(input)
 
@@ -112,12 +121,8 @@ class PlansRepo {
             }
 
 
-            /**
-             * Reads an InputStream and converts it to a String.
-             * @param stream
-             * @return String converted from the InputStream
-             * @throws IOException
-             * @throws UnsupportedEncodingException
+            /*
+            Reads an InputStream and converts it to a String.
              */
             @Throws(IOException::class, UnsupportedEncodingException::class)
             fun readIt(stream: InputStream): String {
@@ -127,7 +132,7 @@ class PlansRepo {
                 run {
                     var line: String? = reader.readLine()
                     while (line != null) {
-                        total.append(line).append('\n')
+                        total.append(line).append('\n') // Keep the line breaks for CSVReader
                         line = reader.readLine()
                     }
                 }

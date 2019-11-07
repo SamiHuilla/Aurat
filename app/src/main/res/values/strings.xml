@@ -2,6 +2,11 @@
     <string name="app_name">Aurat</string>
 
     <string name="text_snackbar">No recent activity</string>
+    <string name="text_permission_snackbar">Map tile storage needs your permission</string>
+    <string name="text_permission_change">Change</string>
+    <string name="text_title_alert_dialog">Permission required</string>
+    <string name="text_message_alert_dialog">Storage write permission is needed for storing map tiles</string>
+    <string name="text_positive_button">Change permissions</string>
 
     <string name="kv">Bicycle and pedestrian lanes</string>
     <string name="au">Snow removal</string>

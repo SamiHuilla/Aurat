@@ -10,8 +10,9 @@ import com.samih.aurat.PlansRepo.JobPlan
 import org.osmdroid.views.overlay.Polyline
 import org.osmdroid.util.GeoPoint
 
-/**
- * Created by sami on 14.10.2019.
+/*
+Acts in between the view (MapFragment) and the model (TrailRepo, PlansRepo).
+Provides observable LiveData objects to the view by transforming the LiveData of the repos.
  */
 class MapDataViewModel(application: Application) : AndroidViewModel(application) {
     private val trailRepo = TrailRepo(application.applicationContext)
@@ -44,6 +45,10 @@ class MapDataViewModel(application: Application) : AndroidViewModel(application)
             "pn" to R.string.pn,
             "ha" to R.string.ha
     )
+    /*
+    LiveData and getter for the street cleaning plans data provided by PlansRepo.
+    The plan data is provided to the view as-is
+     */
     private val viewModelPlanData: LiveData<ArrayList<JobPlan>> = Transformations.map(plansRepo.getPlanList()){ data -> data}
     fun getPlanData(): LiveData<ArrayList<JobPlan>>{
         return viewModelPlanData
@@ -51,6 +56,10 @@ class MapDataViewModel(application: Application) : AndroidViewModel(application)
     fun plansRepo(): PlansRepo{
         return plansRepo
     }
+
+    /*
+    LiveData, getter and the transformation function for the vehicle trail data provided by TrailRepo
+     */
     private val viewModelPolylines: LiveData<ArrayList<Polyline>>  = Transformations.map(trailRepo.getPolylines(), ::generatePolylines)
     private fun generatePolylines(data: ArrayList<Pair<ArrayList<GeoPoint>, Array<String>>>): ArrayList<Polyline> {
         val polylineList = ArrayList<Polyline>()
@@ -76,7 +85,10 @@ class MapDataViewModel(application: Application) : AndroidViewModel(application)
         return trailRepo
     }
 
-
+    /*
+    LiveData, getter and transformation function for the download counter.
+    When the counter reaches 0, the view knows to hide the progress spinner.
+     */
     private val repoIsLoading: LiveData<Boolean> = Transformations.map(trailRepo.getPlowsToLoad(), ::getLoadingState)
     private fun getLoadingState(remainingDownloads: Int): Boolean {
         return (remainingDownloads > 0)

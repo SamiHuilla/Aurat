@@ -19,4 +19,9 @@
     <string name="minute">1 minuutti sitten</string>
     <string name="minutes">%1$d minuuttia sitten</string>
     <string name="text_snackbar">Ei tapahtumia viimeaikoina</string>
+    <string name="text_permission_change">Muokkaa</string>
+    <string name="text_permission_snackbar">Kartan tallennus tarvitsee luvan</string>
+    <string name="text_message_alert_dialog">Taustakartan lataus tarvitsee luvan tiedostojen kirjoittamiseen</string>
+    <string name="text_title_alert_dialog">Sovellus tarvitsee lupasi</string>
+    <string name="text_positive_button">Muuta asetuksia</string>
 </resources>
