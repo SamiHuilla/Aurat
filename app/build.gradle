@@ -17,7 +17,7 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
         buildConfigField "String", "BASE_URL", '"https://api.turku.fi/street-maintenance/v1/vehicles/"'
-        resValue "string", "API_KEY", API_KEY_THUNDERFOREST
+        resValue "string", "API_KEY", API_KEY_THUNDERFOREST // Provide the key in a local file
     }
     buildTypes {
         release {
