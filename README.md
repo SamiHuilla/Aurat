@@ -1,6 +1,8 @@
 # Aurat
 App for visualizing street maintenance data provided by the city of Turku
 
+<img src="trail.png" alt="Trail" width="200"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="plan.png" alt="Plan" width="200"/>
+
 ## Installation
 *Note: Requires Android 7.0 or newer*
 
